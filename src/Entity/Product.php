@@ -6,68 +6,230 @@ use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id = null;
 
-    #[ORM\Column(type: 'integer')]
-    private $price;
+    #[ORM\Column(length: 100)]
+    private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductPromotion::class)]
-    private $productPromotions;
+    #[ORM\Column(length: 100)]
+    private ?string $type = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $quality = null;
+
+    #[ORM\Column]
+    private ?float $price = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $fakePrice = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $popularity = null;
+
+    #[ORM\Column]
+    private ?bool $bestSelling = null;
+
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "id", nullable: false)]
+    private ?Product $product = null;
+
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'product')]
+    private Collection $comments;
+
+    /**
+     * @var Collection<int, Image>
+     */
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'product')]
+    private Collection $images;
+
+    /**
+     * @var Collection<int, Order>
+     */
+    #[ORM\ManyToMany(targetEntity: Order::class, mappedBy: 'product')]
+    private Collection $orders;
 
     public function __construct()
     {
-        $this->productPromotions = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->images = new ArrayCollection();
+        $this->orders = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function getPrice(): ?int
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getQuality(): ?int
+    {
+        return $this->quality;
+    }
+
+    public function setQuality(?int $quality): static
+    {
+        $this->quality = $quality;
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(int $price): self
+    public function setPrice(float $price): static
     {
         $this->price = $price;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, ProductPromotion>
-     */
-    public function getProductPromotions(): Collection
+    public function getFakePrice(): ?float
     {
-        return $this->productPromotions;
+        return $this->fakePrice;
     }
 
-    public function addProductPromotion(ProductPromotion $productPromotion): self
+    public function setFakePrice(?float $fakePrice): static
     {
-        if (!$this->productPromotions->contains($productPromotion)) {
-            $this->productPromotions[] = $productPromotion;
-            $productPromotion->setProduct($this);
+        $this->fakePrice = $fakePrice;
+
+        return $this;
+    }
+
+    public function getPopularity(): ?int
+    {
+        return $this->popularity;
+    }
+
+    public function setPopularity(?int $popularity): static
+    {
+        $this->popularity = $popularity;
+
+        return $this;
+    }
+
+    public function isBestSelling(): ?bool
+    {
+        return $this->bestSelling;
+    }
+
+    public function setBestSelling(bool $bestSelling): static
+    {
+        $this->bestSelling = $bestSelling;
+
+        return $this;
+    }
+
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setProduct($this);
+        }
+    }
+
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getProduct() === $this) {
+                $comment->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setProduct($this);
         }
 
         return $this;
     }
 
-    public function removeProductPromotion(ProductPromotion $productPromotion): self
+    public function removeImage(Image $image): static
     {
-        if ($this->productPromotions->removeElement($productPromotion)) {
+        if ($this->images->removeElement($image)) {
             // set the owning side to null (unless already changed)
-            if ($productPromotion->getProduct() === $this) {
-                $productPromotion->setProduct(null);
+            if ($image->getProduct() === $this) {
+                $image->setProduct(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Order>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): static
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): static
+    {
+        if ($this->orders->removeElement($order)) {
+            $order->removeProduct($this);
         }
 
         return $this;
