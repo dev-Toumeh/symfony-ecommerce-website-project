@@ -5,11 +5,13 @@ namespace App\Entity;
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 class Image
 {
+
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -17,14 +19,19 @@ class Image
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["product_details"])]
     private ?string $imageFilename = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(["product_details"])]
     private ?string $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'images')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
+
+    public const IMAGE_FILENAME = "imageFilename";
+    public const TYPE = "type";
 
     public function getId(): ?Uuid
     {

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
@@ -39,24 +40,18 @@ class Product
     #[ORM\Column]
     private ?bool $bestSelling = null;
 
-    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(name: "product_id", referencedColumnName: "id", nullable: false)]
-    private ?Product $product = null;
-
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'product')]
     private Collection $comments;
 
-    /**
-     * @var Collection<int, Image>
-     */
     #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'product')]
     private Collection $images;
 
-    /**
-     * @var Collection<int, Order>
-     */
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: "product")]
+    #[Groups(["product_details"])]
     #[ORM\ManyToMany(targetEntity: Order::class, mappedBy: 'product')]
     private Collection $orders;
+
+    public const NAME = "name";
 
     public function __construct()
     {
@@ -159,7 +154,7 @@ class Product
         return $this->comments;
     }
 
-    public function addComment(Comment $comment): static
+    public function addComment(Comment $comment): void
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
@@ -199,7 +194,6 @@ class Product
     public function removeImage(Image $image): static
     {
         if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
             if ($image->getProduct() === $this) {
                 $image->setProduct(null);
             }
