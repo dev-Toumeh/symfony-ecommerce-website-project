@@ -34,4 +34,5 @@ class HomeController extends AbstractController
         return $this->render('gallery/gallery.html.twig');
     }
 
+
 }
