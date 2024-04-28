@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Constants\AppConstants;
+use App\Service\ProductService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,15 +13,19 @@ use Symfony\Component\Routing\Attribute\Route;
 class HomeController extends AbstractController
 {
     #[Route('/')]
-    public function index(): Response
+    public function index(ProductService $productService,
+    ): Response
     {
-        return $this->render('home/index.html.twig');
+        $test = $productService->getStartSliderdata();
+        return $this->render(AppConstants::HOME_PAGE,
+            [AppConstants::START_SLIDER => $productService->getStartSliderdata()]
+        );
     }
 
     #[Route('/about')]
     public function aboutUs(): Response
     {
-        return $this->render('about/about.html.twig');
+        return $this->render('admin/product.html.twig');
     }
 
     #[Route('/shop')]
@@ -33,5 +39,6 @@ class HomeController extends AbstractController
     {
         return $this->render('gallery/gallery.html.twig');
     }
+
 
 }

@@ -1,12 +1,7 @@
-###> symfony/framework-bundle ###
-/.env.local
-/.env.local.php
-/.env.*.local
-/config/secrets/prod/prod.decrypt.private.php
-/public/bundles/
-/var/
-/vendor/
-###< symfony/framework-bundle ###
+public/assets/images/
+.gitignore
 .idea
 .env
+vendor
 freshshop-master
+var
