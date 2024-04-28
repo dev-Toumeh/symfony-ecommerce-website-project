@@ -2,36 +2,30 @@
 
 namespace App\Service;
 
-use App\DTO\DTOInterface;
 use App\DTO\ProductDTO;
 use App\Entity\Product;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-readonly class ProductService
+class ProductService
 {
+    private ProductRepository $productRepository;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private ValidatorInterface     $validator,
-        private ImageService           $imageService
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ValidatorInterface     $validator,
+        private readonly ImageService $imageService
     )
     {
+        $this->productRepository = $this->entityManager->getRepository(Product::class);
     }
 
     public function insert(ProductDTO $productDTO): void
     {
-        $productRepository = $this->entityManager->getRepository(Product::class);
-        if($productRepository->isNameUsed($productDTO->getName())) {
-            throw new ValidatorException('name has been taken');
-        }
-        $errors = $this->validator->validate($productDTO);
-        if (count($errors) > 0) {
-            throw new ValidationFailedException('Validation failed', $errors);
-        }
+        $this->validate($productDTO);
 
         $product = new Product();
         $product->setName($productDTO->getName());
@@ -43,12 +37,31 @@ readonly class ProductService
         $product->setBestSelling($productDTO->isBestSelling());
         if ($productDTO->getImages() !== null) {
             foreach ($productDTO->getImages() as $image) {
-                $imageEntity = $this->imageService->insert($image, $product, [true]);
+                $imageEntity = $this->imageService->insert($image, $product);
                 $product->addImage($imageEntity);
             }
         }
-        $this->entityManager->persist($product);
-        $this->entityManager->flush();
+        $this->productRepository->save($product);
+    }
+
+    public function getStartSliderData(): array
+    {
+        return $this->entityManager->getRepository(Product::class)->findStartSliderRecords();
+    }
+
+    /**
+     * @param ProductDTO $productDTO
+     * @return void
+     */
+    private function validate(ProductDTO $productDTO): void
+    {
+        if ($this->productRepository->isNameUsed($productDTO->getName())) {
+            throw new ValidatorException('Product name' . $productDTO->getName() . 'has been taken');
+        }
+        $errors = $this->validator->validate($productDTO);
+        if (count($errors) > 0) {
+            throw new ValidationFailedException('Validation failed', $errors);
+        }
     }
 }
 

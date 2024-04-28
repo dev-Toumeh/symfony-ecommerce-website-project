@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -50,6 +51,9 @@ class Product
     #[Groups(["product_details"])]
     #[ORM\ManyToMany(targetEntity: Order::class, mappedBy: 'product')]
     private Collection $orders;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $bannerDescription = null;
 
     public const NAME = "name";
 
@@ -225,6 +229,18 @@ class Product
         if ($this->orders->removeElement($order)) {
             $order->removeProduct($this);
         }
+
+        return $this;
+    }
+
+    public function getBannerDescription(): ?string
+    {
+        return $this->bannerDescription;
+    }
+
+    public function setBannerDescription(string $bannerDescription): static
+    {
+        $this->bannerDescription = $bannerDescription;
 
         return $this;
     }

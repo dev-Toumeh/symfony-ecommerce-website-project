@@ -25,4 +25,22 @@ class ProductRepository extends ServiceEntityRepository
     {
         return $this->findOneBy([Product::NAME => $name]) !== null;
     }
+
+    public function findStartSliderRecords() {
+        return $this->createQueryBuilder('p')
+            ->select('p.bannerDescription, p.name, i.base64Image ')
+            ->join('p.images', 'i')
+            ->orderBy('RAND()')
+            ->setMaxResults(3)
+            ->where("i.type = 'banner'")
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function save(Product $product): void
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($product);
+        $entityManager->flush();
+    }
 }

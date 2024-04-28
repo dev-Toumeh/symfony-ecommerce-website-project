@@ -11,4 +11,7 @@ class AppConstants
     const IMAGE_FILENAME = 'imageFilename';
     const IMAGE_TYPE = 'imageType';
     const IMAGE_TDO_ARRAY = 'App\DTO\ImageDTO[]';
+
+    const HOME_PAGE = 'home/index.html.twig';
+    const START_SLIDER = 'startSlidersData';
 }

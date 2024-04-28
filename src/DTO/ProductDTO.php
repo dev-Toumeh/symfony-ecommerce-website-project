@@ -31,6 +31,9 @@ class ProductDTO implements DTOInterface
     #[Assert\Type(type: 'bool')]
     private ?bool $bestSelling = null;
 
+    #[Assert\NotBlank]
+    private ?string $bannerDescription = null;
+
     /**
      * @var ImageDTO[]
      */
@@ -108,6 +111,18 @@ class ProductDTO implements DTOInterface
         $this->bestSelling = $bestSelling;
     }
 
+    public function getBannerDescription(): ?string
+    {
+        return $this->bannerDescription;
+    }
+
+    public function setBannerDescription(string $bannerDescription): static
+    {
+        $this->bannerDescription = $bannerDescription;
+
+        return $this;
+    }
+
     /**
      * @param ImageDTO[] $images
      */
@@ -118,5 +133,6 @@ class ProductDTO implements DTOInterface
     public function getImages(): array {
         return $this->images;
     }
+
 
 }

@@ -1,18 +1,20 @@
 {% block start_slider %}
     <div id="slides-shop" class="cover-slides">
         <ul class="slides-container">
-            <li class="text-center">
-                <img src="{{ asset('assets/images/banner-01.jpg') }}" alt="">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h1 class="m-b-20"><strong>Welcome To <br> Freshshop</strong></h1>
-                            <p class="m-b-40">See how your users experience your website in realtime or view <br> trends to see any changes in performance over time.</p>
-                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+            {% for startSlider in startSlidersData %}
+                <li class="text-center">
+                    <img src="data:image/jpeg;base64,{{ startSlider.base64Image }}" alt="Embedded Image from Base64">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h1 class="m-b-20"><strong>you will love our <br> Fresh {{ startSlider.name }}</strong></h1>
+                                <p class="m-b-40">{{ startSlider.bannerDescription }}</p>
+                                <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
+                </li>
+            {% endfor %}
         </ul>
         <div class="slides-navigation">
             <a href="#" class="next"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
@@ -20,3 +22,4 @@
         </div>
     </div>
 {% endblock %}
+

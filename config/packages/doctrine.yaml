@@ -24,6 +24,9 @@ doctrine:
                 alias: App
         controller_resolver:
             auto_mapping: true
+        dql:
+            numeric_functions:
+                RAND: 'App\Query\Rand'
 
 when@test:
     doctrine:

@@ -30,6 +30,9 @@ class Image
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $base64Image;
+
     public const IMAGE_FILENAME = "imageFilename";
     public const TYPE = "type";
 
@@ -59,6 +62,17 @@ class Image
     {
         $this->type = $type;
 
+        return $this;
+    }
+
+    public function getBase64Image(): ?string
+    {
+        return $this->base64Image;
+    }
+
+    public function setBase64Image(?string $base64Image): self
+    {
+        $this->base64Image = $base64Image;
         return $this;
     }
 

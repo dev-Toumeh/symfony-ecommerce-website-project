@@ -20,6 +20,8 @@ class ImageDTO implements DTOInterface
     )]
     private ?string $type = null;
 
+    private ?string $base64Image;
+
     public function getImageFilename(): ?string
     {
         return $this->imageFilename;
@@ -44,8 +46,14 @@ class ImageDTO implements DTOInterface
         return $this;
     }
 
-    public function jsonSerialize(): mixed
+    public function getBase64Image(): ?string
     {
+        return $this->base64Image;
+    }
+
+    public function setBase64Image(?string $base64Image): self
+    {
+        $this->base64Image = $base64Image;
         return $this;
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Image;
-use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -22,16 +21,15 @@ class ImageRepository extends ServiceEntityRepository
         parent::__construct($registry, Image::class);
     }
 
-    public function findThreeRandomRecords() {
-        return $this->createQueryBuilder('a')
-            ->orderBy('RAND()')
-            ->setMaxResults(3)
-            ->getQuery()
-            ->getResult();
-    }
-
     public function isNameUsed($imageFilename): bool
     {
         return $this->findOneBy([Image::IMAGE_FILENAME => $imageFilename]) !== null;
+    }
+
+    public function save(Image $image, bool $flush = false): void
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($image);
+        $flush ? $entityManager->flush(): null;
     }
 }

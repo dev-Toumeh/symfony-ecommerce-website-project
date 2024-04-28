@@ -212,5 +212,21 @@
 		cursorcolor: "#9b9b9c",
 	});
 
-
+	$('#jsonUploadForm').submit(function(event) {
+		event.preventDefault();
+		let formData = new FormData(this);
+		$.ajax({
+			url: '/upload-json',
+			type: 'POST',
+			data: formData,
+			contentType: false,
+			processData: false,
+			success: function(data) {
+				alert('Data Uploaded: ' + data);
+			},
+			error: function() {
+				alert('Error uploading data.');
+			}
+		});
+	});
 }(jQuery));

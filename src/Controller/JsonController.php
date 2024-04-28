@@ -31,7 +31,6 @@ class JsonController extends AbstractController
                                ProductService $productService): JsonResponse
     {
 
-
         $productDTO = $this->serializer->deserialize(
             $request->getContent(),
             ProductDTO::class,
@@ -62,4 +61,13 @@ class JsonController extends AbstractController
             return new JsonResponse(['success' => false, 'message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
+
+    #[Route('/test', name: 'test', methods: ['GET'])]
+    public function test(Request $request): JsonResponse
+    {
+        $product = $this->entityManager->getRepository(Product::class)->findStartSliderRecords();
+        return new JsonResponse(['success' => true, 'message' => 'life is good'], Response::HTTP_OK);
+
+    }
+
 }
