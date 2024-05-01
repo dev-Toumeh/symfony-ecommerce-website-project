@@ -26,15 +26,26 @@ class ProductRepository extends ServiceEntityRepository
         return $this->findOneBy([Product::NAME => $name]) !== null;
     }
 
-    public function findStartSliderRecords() {
+    public function findImages($type, $fields, $maxResults = 3) {
         return $this->createQueryBuilder('p')
-            ->select('p.bannerDescription, p.name, i.base64Image ')
+            ->setParameter('type', $type)
+            ->select($fields)
             ->join('p.images', 'i')
+            ->where('i.type = :type')
             ->orderBy('RAND()')
-            ->setMaxResults(3)
-            ->where("i.type = 'banner'")
+            ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findStartSliderRecords() {
+        $fields = 'p.bannerDescription, p.name, i.base64Image';
+        return $this->findImages('banner', $fields);
+    }
+
+    public function findCategories() {
+        $fields = 'p.category, i.base64Image';
+        return $this->findImages('category', $fields);
     }
 
     public function save(Product $product): void

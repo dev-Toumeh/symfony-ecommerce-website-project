@@ -13,7 +13,7 @@ class ProductDTO implements DTOInterface
 
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
-    private ?string $type = null;
+    private ?string $category = null;
 
     #[Assert\Range(min: 1, max: 10)]
     private ?int $quality = null;
@@ -51,14 +51,14 @@ class ProductDTO implements DTOInterface
         $this->name = $name;
     }
 
-    public function getType(): ?string
+    public function getCategory(): ?string
     {
-        return $this->type;
+        return $this->category;
     }
 
-    public function setType(?string $type): void
+    public function setCategory(?string $category): void
     {
-        $this->type = $type;
+        $this->category = $category;
     }
 
     public function getQuality(): ?int
@@ -126,13 +126,16 @@ class ProductDTO implements DTOInterface
     /**
      * @param ImageDTO[] $images
      */
-    public function setImages(array $images): void {
+    public function setImages(array $images): void
+    {
         $this->images = $images;
     }
 
-    public function getImages(): array {
-        return $this->images;
+    public function getImages(): ?array
+    {
+        if (isset($this->images)) {
+            return $this->images;
+        }
+        return null;
     }
-
-
 }

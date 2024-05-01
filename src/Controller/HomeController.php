@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Constants\AppConstants;
 use App\Service\ProductService;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -13,13 +14,16 @@ use Symfony\Component\Routing\Attribute\Route;
 class HomeController extends AbstractController
 {
     #[Route('/')]
-    public function index(ProductService $productService,
-    ): Response
+    public function index(ProductService $productService): Response
     {
-        $test = $productService->getStartSliderdata();
-        return $this->render(AppConstants::HOME_PAGE,
-            [AppConstants::START_SLIDER => $productService->getStartSliderdata()]
-        );
+        try {
+            $homePageData = $productService->getHomePageData();
+            return $this->render(AppConstants::HOME_PAGE, $homePageData);
+        } catch (Exception $e) {
+            $this->addFlash('we have some Problems at the moment please come back Later', "");
+            // add logger here
+            return $this->redirectToRoute('app_home_error');
+        }
     }
 
     #[Route('/about')]
@@ -41,4 +45,9 @@ class HomeController extends AbstractController
     }
 
 
+    #[Route('/error')]
+    public function error(): Response
+    {
+            return $this->render(AppConstants::ERROR_PAGE);
+    }
 }

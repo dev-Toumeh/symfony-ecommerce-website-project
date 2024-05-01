@@ -1,7 +1,7 @@
 {% block start_slider %}
     <div id="slides-shop" class="cover-slides">
         <ul class="slides-container">
-            {% for startSlider in startSlidersData %}
+            {% for startSlider in startSliders %}
                 <li class="text-center">
                     <img src="data:image/jpeg;base64,{{ startSlider.base64Image }}" alt="Embedded Image from Base64">
                     <div class="container">

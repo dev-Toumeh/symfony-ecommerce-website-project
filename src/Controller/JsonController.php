@@ -3,19 +3,19 @@
 namespace App\Controller;
 
 use Exception;
+use App\DTO\ProductDTO;
 use App\Entity\Product;
 use App\Service\ImageService;
-use App\Service\Serializer\DTOSerializerInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Constants\AppConstants;
-use App\DTO\ProductDTO;
 use App\Service\ProductService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Uid\Uuid;
+use App\Constants\AppConstants;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Uid\Uuid;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\Serializer\DTOSerializerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class JsonController extends AbstractController
 {
@@ -67,7 +67,6 @@ class JsonController extends AbstractController
     {
         $product = $this->entityManager->getRepository(Product::class)->findStartSliderRecords();
         return new JsonResponse(['success' => true, 'message' => 'life is good'], Response::HTTP_OK);
-
     }
 
 }

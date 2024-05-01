@@ -24,7 +24,7 @@ class Product
     private ?string $name = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $type = null;
+    private ?string $category = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $quality = null;
@@ -81,14 +81,14 @@ class Product
         return $this;
     }
 
-    public function getType(): ?string
+    public function getCategory(): ?string
     {
-        return $this->type;
+        return $this->category;
     }
 
-    public function setType(string $type): static
+    public function setCategory(string $category): static
     {
-        $this->type = $type;
+        $this->category = $category;
 
         return $this;
     }

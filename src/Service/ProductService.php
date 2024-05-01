@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Constants\AppConstants;
 use App\DTO\ProductDTO;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
@@ -29,12 +30,13 @@ class ProductService
 
         $product = new Product();
         $product->setName($productDTO->getName());
-        $product->setType($productDTO->getType());
+        $product->setCategory($productDTO->getCategory());
         $product->setQuality($productDTO->getQuality());
         $product->setPrice($productDTO->getPrice());
         $product->setFakePrice($productDTO->getFakePrice());
         $product->setPopularity($productDTO->getPopularity());
         $product->setBestSelling($productDTO->isBestSelling());
+        $product->setBannerDescription($productDTO->getBannerDescription());
         if ($productDTO->getImages() !== null) {
             foreach ($productDTO->getImages() as $image) {
                 $imageEntity = $this->imageService->insert($image, $product);
@@ -44,9 +46,12 @@ class ProductService
         $this->productRepository->save($product);
     }
 
-    public function getStartSliderData(): array
+    public function getHomePageData(): array
     {
-        return $this->entityManager->getRepository(Product::class)->findStartSliderRecords();
+        return [
+            AppConstants::START_SLIDER =>  $this->productRepository->findStartSliderRecords(),
+            AppConstants::CATEGORIES =>  $this->productRepository->findCategories()
+        ];
     }
 
     /**
