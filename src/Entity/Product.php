@@ -14,6 +14,9 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
+
+    public const BEST_SELLER = "best_Selling";
+
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]

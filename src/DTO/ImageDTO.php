@@ -22,6 +22,9 @@ class ImageDTO implements DTOInterface
 
     private ?string $base64Image;
 
+    #[Assert\NotBlank(message: "productID cannot be blank.")]
+    private ?string $productId;
+
     public function getImageFilename(): ?string
     {
         return $this->imageFilename;
@@ -55,5 +58,25 @@ class ImageDTO implements DTOInterface
     {
         $this->base64Image = $base64Image;
         return $this;
+    }
+    public function getProductId( ): ?string
+    {
+        return   $this->productId;
+    }
+
+    public function setProductId(string $productId): self
+    {
+        $this->productId = $productId;
+
+        return $this;
+    }
+
+    public function getProductIdFromDTOImages($dtoImages): ?string
+    {
+        if (!empty($dtoImages)) {
+            foreach ($dtoImages as $image) {
+                $image->getProductId();
+            }
+        }
     }
 }

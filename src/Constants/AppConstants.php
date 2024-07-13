@@ -18,4 +18,6 @@ class AppConstants
 
     const START_SLIDER = 'startSliders';
     const CATEGORIES = 'categories';
+    const  ADVERTISES= 'advertises';
+    const PRO = "pros";
 }

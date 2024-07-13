@@ -7,7 +7,6 @@ use App\DTO\ProductDTO;
 use App\Entity\Product;
 use App\Service\ImageService;
 use App\Service\ProductService;
-use Symfony\Component\Uid\Uuid;
 use App\Constants\AppConstants;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,8 +22,7 @@ class JsonController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly DTOSerializerInterface $serializer,
     )
-    {
-    }
+    {}
 
     #[Route('/add-product', name: 'add-product', methods: ['POST'])]
     public function addProduct(Request        $request,
@@ -37,14 +35,11 @@ class JsonController extends AbstractController
             AppConstants::JSON);
 
         $productService->insert($productDTO);
-
         return new JsonResponse(['success' => true, 'message' => 'Product added successfully'], Response::HTTP_CREATED);
-
     }
 
-    #[Route('/add-image/{id}', name: 'add-image', methods: ['POST'])]
+    #[Route('/add-image', name: 'add-image', methods: ['POST'])]
     public function addImage(Request      $request,
-                             Uuid         $id,
                              ImageService $imageService): JsonResponse
     {
         try {
@@ -53,7 +48,8 @@ class JsonController extends AbstractController
                 AppConstants::IMAGE_TDO_ARRAY,
                 AppConstants::JSON);
 
-            $product = $this->entityManager->getRepository(Product::class)->find($id);
+            $ProductId = $imageDTOArray[0]->getProductId();
+           $product = $this->entityManager->getRepository(Product::class)->find($ProductId);
             $imageService->insertImages($imageDTOArray, $product);
 
             return new JsonResponse(['success' => true, 'message' => 'Image ws added successfully'], Response::HTTP_CREATED);

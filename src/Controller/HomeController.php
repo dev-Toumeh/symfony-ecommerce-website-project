@@ -7,22 +7,30 @@ namespace App\Controller;
 use App\Constants\AppConstants;
 use App\Service\ProductService;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
+  public function __construct(private LoggerInterface $logger)
+    {
+    }
+
+    /**
+     * @return Response|RedirectResponse
+     */
     #[Route('/')]
-    public function index(ProductService $productService): Response
+    public function index(ProductService $productService): Response|RedirectResponse 
     {
         try {
             $homePageData = $productService->getHomePageData();
             return $this->render(AppConstants::HOME_PAGE, $homePageData);
         } catch (Exception $e) {
-            $this->addFlash('we have some Problems at the moment please come back Later', "");
-            // add logger here
-            return $this->redirectToRoute('app_home_error');
+            $this->logger->error($e);
+            return $this->render(AppConstants::ERROR_PAGE, ['message' =>  "The website is currently unavailable. Please try again later."]);
         }
     }
 
@@ -45,9 +53,9 @@ class HomeController extends AbstractController
     }
 
 
-    #[Route('/error')]
-    public function error(): Response
+    #[Route('/error', name: 'app_home_error')]
+    public function error(string $message = null): Response
     {
-            return $this->render(AppConstants::ERROR_PAGE);
+        return $this->render(AppConstants::ERROR_PAGE);
     }
 }

@@ -16,7 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ImageRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, )
     {
         parent::__construct($registry, Image::class);
     }
@@ -26,8 +26,21 @@ class ImageRepository extends ServiceEntityRepository
         return $this->findOneBy([Image::IMAGE_FILENAME => $imageFilename]) !== null;
     }
 
-    public function save(Image $image, bool $flush = false): void
+
+    public function getAdvertisingImages(): array
     {
+        return $this->createQueryBuilder('i')
+                    ->select('i.base64Image')
+                    ->where('i.type = :type') 
+                    ->setParameter('type', 'Advertising')
+                    ->setMaxResults(2) 
+                    ->getQuery()
+                    ->getResult();
+    }
+
+
+    public function save(Image $image, bool $flush = false): void
+    { 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($image);
         $flush ? $entityManager->flush(): null;

@@ -106,9 +106,9 @@ class ProductDTO implements DTOInterface
         return $this->bestSelling;
     }
 
-    public function setBestSelling(?bool $bestSelling): void
+    public function setBestSelling(?int $bestSelling): void
     {
-        $this->bestSelling = $bestSelling;
+        $this->bestSelling = ($bestSelling === 1);
     }
 
     public function getBannerDescription(): ?string

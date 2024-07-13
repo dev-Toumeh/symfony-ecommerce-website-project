@@ -2,26 +2,32 @@
 
 namespace App\Service;
 
-use App\Constants\AppConstants;
+use Exception;
+use App\Entity\Image;
 use App\DTO\ProductDTO;
 use App\Entity\Product;
+use Psr\Log\LoggerInterface;
+use App\Constants\AppConstants;
+use App\Repository\ImageRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
-use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Exception\ValidatorException;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 class ProductService
 {
     private ProductRepository $productRepository;
+    private ImageRepository $imageRepository;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface     $validator,
-        private readonly ImageService $imageService
-    )
-    {
+        private readonly ImageService $imageService,
+        private LoggerInterface $logger
+    ) {
         $this->productRepository = $this->entityManager->getRepository(Product::class);
+        $this->imageRepository = $this->entityManager->getRepository(Image::class);
     }
 
     public function insert(ProductDTO $productDTO): void
@@ -46,12 +52,23 @@ class ProductService
         $this->productRepository->save($product);
     }
 
+    /**
+     * @return array<string,array>
+     * @throws \Exception
+     */
     public function getHomePageData(): array
     {
-        return [
-            AppConstants::START_SLIDER =>  $this->productRepository->findStartSliderRecords(),
-            AppConstants::CATEGORIES =>  $this->productRepository->findCategories()
-        ];
+        try {
+            return [
+                AppConstants::START_SLIDER => $this->productRepository->findStartSliderRecords(),
+                AppConstants::CATEGORIES => $this->productRepository->findCategories(),
+                AppConstants::ADVERTISES => $this->imageRepository->getAdvertisingImages(),
+                AppConstants::PRO => $this->adjustProProduct()
+            ];
+        } catch (\Exception $e) {
+            $this->logger->error($e);
+            throw new Exception('Error fetching home page data');
+        }
     }
 
     /**
@@ -68,5 +85,27 @@ class ProductService
             throw new ValidationFailedException('Validation failed', $errors);
         }
     }
-}
 
+
+    private function adjustProProduct(): array
+   {
+        $products = $this->productRepository->getProProducts();
+        $bestSellersCount = 0;
+        $popularCount = 0;
+
+        if (!empty($products)) {
+            foreach ($products as $index => $product) {
+                if ($product['bestSelling'] && $bestSellersCount < 4) {
+                    $products[$index]['type'] = 'best-seller';
+                    $bestSellersCount++;
+                } elseif ($product['popularity'] <= 2 && $popularCount < 4) {
+                    $products[$index]['type'] = 'popular';
+                    $popularCount++;
+                } else {
+                    $products[$index]['type'] = '';
+                }
+            }
+        }
+        return $products;
+    }
+}

@@ -8,6 +8,7 @@ framework:
 
     #esi: true
     #fragments: true
+  #    error_controller: App\Controller\HomeController::error
 
 when@test:
     framework:
