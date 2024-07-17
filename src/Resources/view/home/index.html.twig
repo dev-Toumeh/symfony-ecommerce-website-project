@@ -2,7 +2,7 @@
 
 {% block content %}
     <!-- Start Slider -->
-    {% include 'home/sections/start-slider.html.twig' %}
+    {{ include('home/sections/start-slider.html.twig') }}
     <!-- End Slider -->
 
     <!-- Start Categories  -->
@@ -25,10 +25,10 @@
     <div class="box-add-products">
         <div class="container">
           <div class="row">
-            {% for  advertise in  advertises  %}
+            {% for advertise in advertises %}
               <div class="col-lg-6 col-md-6 col-sm-12">
                 <div class="offer-box-products">
-                  <img class="img-fluid" src="data:image/jpeg;base64,{{advertise.base64Image}}" alt="">
+                  <img class="img-fluid" src="data:image/jpeg;base64,{{ advertise.base64Image }}" alt="">
                 </div>
               </div>
             {% endfor %}
@@ -59,16 +59,15 @@
                 </div>
             </div>
 
-
             <div class="row special-list">
-            {% for  pro  in  pros  %}
-      <div class="col-lg-3 col-md-6 special-grid {{pro.type}} ">
+            {% for pro in pros %}
+      <div class="col-lg-3 col-md-6 special-grid {{ pro.type }} ">
                     <div class="products-single fix">
                         <div class="box-img-hover">
                             <div class="type-lb">
                                 <p class="sale">Sale</p>
                             </div>
-                            <img src="data:image/jpeg;base64,{{pro.base64Image}}" class="img-fluid" alt="Image">
+                            <img src="data:image/jpeg;base64,{{ pro.base64Image }}" class="img-fluid" alt="Image">
                             <div class="mask-icon">
                                 <ul>
                                     <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i
@@ -82,15 +81,12 @@
                             </div>
                         </div>
                         <div class="why-text">
-                            <h4>{{pro.name}}</h4>
-                            <h5>${{pro.price}}</h5>
+                            <h4>{{ pro.name }}</h4>
+                            <h5>${{ pro.price }}</h5>
                         </div>
                     </div>
                 </div>
             {% endfor %}
-
-
-
             </div>
         </div>
     </div>
@@ -108,17 +104,16 @@
                 </div>
             </div>
             <div class="row">
+           {% for blog in blogs %}
                 <div class="col-md-6 col-lg-4 col-xl-4">
                     <div class="blog-box">
                         <div class="blog-img">
-                            <img class="img-fluid" src="images/blog-img.jpg" alt=""/>
+                            <img class="img-fluid" src="data:image/jpeg;base64,{{ blog.base64Image }}" alt=""/>
                         </div>
                         <div class="blog-content">
                             <div class="title-blog">
-                                <h3>Fusce in augue non nisi fringilla</h3>
-                                <p>Nulla ut urna egestas, porta libero id, suscipit orci. Quisque in lectus sit amet
-                                    urna dignissim feugiat. Mauris molestie egestas pharetra. Ut finibus cursus nunc sed
-                                    mollis. Praesent laoreet lacinia elit id lobortis.</p>
+                                <h3>{{blog.bannerDescription}}</h3>
+                                <p>{{blog.name}}</p>
                             </div>
                             <ul class="option-blog">
                                 <li><a href="#"><i class="far fa-heart"></i></a></li>
@@ -128,46 +123,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-4 col-xl-4">
-                    <div class="blog-box">
-                        <div class="blog-img">
-                            <img class="img-fluid" src="images/blog-img-01.jpg" alt=""/>
-                        </div>
-                        <div class="blog-content">
-                            <div class="title-blog">
-                                <h3>Fusce in augue non nisi fringilla</h3>
-                                <p>Nulla ut urna egestas, porta libero id, suscipit orci. Quisque in lectus sit amet
-                                    urna dignissim feugiat. Mauris molestie egestas pharetra. Ut finibus cursus nunc sed
-                                    mollis. Praesent laoreet lacinia elit id lobortis.</p>
-                            </div>
-                            <ul class="option-blog">
-                                <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                <li><a href="#"><i class="fas fa-eye"></i></a></li>
-                                <li><a href="#"><i class="far fa-comments"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4 col-xl-4">
-                    <div class="blog-box">
-                        <div class="blog-img">
-                            <img class="img-fluid" src="" alt=""/>
-                        </div>
-                        <div class="blog-content">
-                            <div class="title-blog">
-                                <h3>Fusce in augue non nisi fringilla</h3>
-                                <p>Nulla ut urna egestas, porta libero id, suscipit orci. Quisque in lectus sit amet
-                                    urna dignissim feugiat. Mauris molestie egestas pharetra. Ut finibus cursus nunc sed
-                                    mollis. Praesent laoreet lacinia elit id lobortis.</p>
-                            </div>
-                            <ul class="option-blog">
-                                <li><a href="#"><i class="far fa-heart"></i></a></li>
-                                <li><a href="#"><i class="fas fa-eye"></i></a></li>
-                                <li><a href="#"><i class="far fa-comments"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            {% endfor %}
             </div>
         </div>
     </div>

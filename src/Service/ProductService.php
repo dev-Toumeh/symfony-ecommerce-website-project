@@ -60,10 +60,11 @@ class ProductService
     {
         try {
             return [
-                AppConstants::START_SLIDER => $this->productRepository->findStartSliderRecords(),
+                AppConstants::START_SLIDER => $this->productRepository->getElementData(AppConstants::BANNER),
                 AppConstants::CATEGORIES => $this->productRepository->findCategories(),
                 AppConstants::ADVERTISES => $this->imageRepository->getAdvertisingImages(),
-                AppConstants::PRO => $this->adjustProProduct()
+                AppConstants::BLOGS => $this->productRepository->getElementData(AppConstants::BLOG),
+                AppConstants::PRO => $this->adjustProProduct(),
             ];
         } catch (\Exception $e) {
             $this->logger->error($e);
@@ -88,7 +89,7 @@ class ProductService
 
 
     private function adjustProProduct(): array
-   {
+    {
         $products = $this->productRepository->getProProducts();
         $bestSellersCount = 0;
         $popularCount = 0;

@@ -30,10 +30,10 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     // Method to find start slider records
-    public function findStartSliderRecords(): array
+    public function getElementData(string $type): array
     {
         return $this->createQueryBuilder('p')
-            ->setParameter('type', 'banner')
+            ->setParameter('type', $type)
             ->select('p.bannerDescription, p.name, i.base64Image')
             ->join('p.images', 'i')
             ->where('i.type = :type')
@@ -57,17 +57,17 @@ class ProductRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getBestSellerProducts(): array
-    {
-        return $this->createQueryBuilder('p')
-            ->select(Product::BEST_SELLER)
-            ->join('p.images', 'i')
-            ->where('i.type = :type')
-            ->orderBy('RAND()')
-            ->setMaxResults(4)
-            ->getQuery()
-            ->getResult();
-    }
+    // public function getBestSellerProducts(): array
+    // {
+    //     return $this->createQueryBuilder('p')
+    //         ->select(Product::BEST_SELLER)
+    //         ->join('p.images', 'i')
+    //         ->where('i.type = :type')
+    //         ->orderBy('RAND()')
+    //         ->setMaxResults(4)
+    //         ->getQuery()
+    //         ->getResult();
+    // }
   
 public function getProProducts(string $basedOn = ""): array
 {
