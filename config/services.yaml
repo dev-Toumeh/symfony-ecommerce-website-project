@@ -10,6 +10,8 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $rapidApiKey: "%env(RAPID_API_KEY)%"
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -20,10 +22,18 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
  # config/services.yaml
 
-    # App\eventListeners\ExceptionListener:
-    #     tags:
-    #         - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+    App\eventListeners\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+    instagram-api-client:
+        class: App\Http\InstagramApiClient
+        public: true
+
+    App\Http\InstagramApiClientInterface:
+        class: App\Http\InstagramApiClient
+    
