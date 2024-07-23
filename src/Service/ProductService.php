@@ -8,11 +8,14 @@ use App\DTO\ProductDTO;
 use App\Entity\Product;
 use Psr\Log\LoggerInterface;
 use App\Constants\AppConstants;
+use App\Http\InstagramApiClient;
 use App\Repository\ImageRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\Serializer\DTOSerializerInterface;
 use Symfony\Component\Validator\Exception\ValidatorException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 class ProductService
@@ -24,7 +27,9 @@ class ProductService
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface     $validator,
         private readonly ImageService $imageService,
-        private LoggerInterface $logger
+        private readonly DTOSerializerInterface $serializer,
+        private LoggerInterface $logger,
+        private InstagramApiClient $InstagramApiClient,
     ) {
         $this->productRepository = $this->entityManager->getRepository(Product::class);
         $this->imageRepository = $this->entityManager->getRepository(Image::class);
@@ -64,9 +69,10 @@ class ProductService
                 AppConstants::CATEGORIES => $this->productRepository->findCategories(),
                 AppConstants::ADVERTISES => $this->imageRepository->getAdvertisingImages(),
                 AppConstants::BLOGS => $this->productRepository->getElementData(AppConstants::BLOG),
-                AppConstants::PRO => $this->adjustProProduct(),
+                AppConstants::PRO => $this->proProductHandler(),
+                AppConstants::INSTAGRAM_THUMBNAILS_URLS => $this->InstagramImagesHandler(),
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e);
             throw new Exception('Error fetching home page data');
         }
@@ -87,8 +93,7 @@ class ProductService
         }
     }
 
-
-    private function adjustProProduct(): array
+    private function proProductHandler(): array
     {
         $products = $this->productRepository->getProProducts();
         $bestSellersCount = 0;
@@ -108,5 +113,34 @@ class ProductService
             }
         }
         return $products;
+    }
+
+    /**
+     * Fetches and validates user Instagram images, returning valid URLs or an empty array on errors.
+     * @return array An array of valid Instagram image URLs, or an empty array on error.
+     */
+    private function InstagramImagesHandler(): array
+    {
+        $response = $this->InstagramApiClient->fetchInstagramData('mrbeast');
+        if ($response->getStatusCode() !== JsonResponse::HTTP_OK) {
+            $this->logger->error($response->getContent());
+            return [];
+        }
+
+        $instagramImages = $this->serializer->deserialize($response->getContent(), 'App\\DTO\\InstagramImageDTO[]', 'json');
+        $validUrls = [];
+        foreach ($instagramImages as $imageDTO) {
+            $errors = $this->validator->validate($imageDTO);
+            if (count($errors) > 0) {
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[] = $error->getMessage();
+                }
+                $this->logger->error(implode(', ', $errorMessages));
+            } else {
+                $validUrls[] = $imageDTO->getImageUrl();
+            }
+        }
+        return $validUrls;
     }
 }

@@ -19,6 +19,7 @@ class AppConstants
     public const ADVERTISES = 'advertises';
     public const PRO = "pros";
     public const BLOGS = 'blogs';
+    public const INSTAGRAM_THUMBNAILS_URLS = 'thumbnails';
 
     // image types
     public const BANNER = 'banner';
