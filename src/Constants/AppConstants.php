@@ -11,6 +11,7 @@ class AppConstants
     public const IMAGE_TDO_ARRAY = 'App\DTO\ImageDTO[]';
 
     public const HOME_PAGE = 'home/index.html.twig';
+    public const SHOP_PAGE = 'shop/shop.html.twig';
     public const ERROR_PAGE = 'errorPage.html.twig';
 
     // home Page Elements data Constants

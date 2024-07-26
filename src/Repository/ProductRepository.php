@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -44,7 +45,7 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     // Method to find categories
-    public function findCategories(): array
+    public function getHomePageCategories(): array
     {
         return $this->createQueryBuilder('p')
             ->setParameter('type', 'category')
@@ -103,10 +104,26 @@ public function getProProducts(string $basedOn = ""): array
               ->getResult();
 }
 
+    /**
+     * @return void
+     */
     public function save(Product $product): void
     {
         $entityManager = $this->getEntityManager();
         $entityManager->persist($product);
         $entityManager->flush();
     }
+
+    /**
+     * @return QueryBuilder
+     */
+
+    public function getShopPagePaginationQuery(): QueryBuilder {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.images', 'i', 'WITH', 'i.type = :type')
+            ->setParameter('type', 'pro')
+            ->select('p.name, p.price, i.base64Image')
+            ->orderBy('RAND()');
+    }
+
 }

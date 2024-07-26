@@ -27,9 +27,6 @@ services:
     # please note that last definitions always *replace* previous ones
  # config/services.yaml
 
-    App\eventListeners\ExceptionListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
     instagram-api-client:
         class: App\Http\InstagramApiClient
         public: true
