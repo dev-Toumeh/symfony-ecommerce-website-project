@@ -66,7 +66,7 @@ class ProductService
         try {
             return [
                 AppConstants::START_SLIDER => $this->productRepository->getElementData(AppConstants::BANNER),
-                AppConstants::CATEGORIES => $this->productRepository->findCategories(),
+                AppConstants::CATEGORIES => $this->productRepository->getHomePageCategories(),
                 AppConstants::ADVERTISES => $this->imageRepository->getAdvertisingImages(),
                 AppConstants::BLOGS => $this->productRepository->getElementData(AppConstants::BLOG),
                 AppConstants::PRO => $this->proProductHandler(),

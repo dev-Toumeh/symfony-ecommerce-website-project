@@ -58,17 +58,6 @@ class ProductRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    // public function getBestSellerProducts(): array
-    // {
-    //     return $this->createQueryBuilder('p')
-    //         ->select(Product::BEST_SELLER)
-    //         ->join('p.images', 'i')
-    //         ->where('i.type = :type')
-    //         ->orderBy('RAND()')
-    //         ->setMaxResults(4)
-    //         ->getQuery()
-    //         ->getResult();
-    // }
   
 public function getProProducts(string $basedOn = ""): array
 {
@@ -79,7 +68,7 @@ public function getProProducts(string $basedOn = ""): array
     if (!empty($basedOn)) {
         switch ($basedOn) {
             case 'best_selling':
-                $qb->where('p.best_selling = :bool')
+                $qb->where('p.bestSelling = :bool')
                    ->setParameter('bool', 1);
                 break;
             case 'quality':
@@ -117,13 +106,19 @@ public function getProProducts(string $basedOn = ""): array
     /**
      * @return QueryBuilder
      */
+public function getShopPagePaginationQuery(string $view = 'grid'): QueryBuilder {
+    $queryBuilder = $this->createQueryBuilder('p')
+        ->innerJoin('p.images', 'i', 'WITH', 'i.type = :type')
+        ->setParameter('type', 'pro');
 
-    public function getShopPagePaginationQuery(): QueryBuilder {
-        return $this->createQueryBuilder('p')
-            ->innerJoin('p.images', 'i', 'WITH', 'i.type = :type')
-            ->setParameter('type', 'pro')
-            ->select('p.name, p.price, i.base64Image')
-            ->orderBy('RAND()');
+    if ($view === 'list') {
+        $queryBuilder->select('p.name, p.price, i.base64Image, p.bannerDescription, p.fakePrice, p.bestSelling, p.popularity ');
+    } else {
+        $queryBuilder->select('p.name, p.price, i.base64Image, p.bestSelling, p.popularity ');
     }
+
+    return $queryBuilder->orderBy('RAND()');
+}
+
 
 }
